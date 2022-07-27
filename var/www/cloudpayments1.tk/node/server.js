@@ -1,20 +1,35 @@
 const http = require("http");
 
+var globCnt=0;
+
 const server = http.createServer((req, res) => {
   const urlPath = req.url;
-  if (urlPath === "/overview") {
-    res.end('Welcome to the "overview page" of the nginX project');
-  } else if (urlPath === "/api") {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(
-      JSON.stringify({
-        product_id: "xyz12u3",
-        product_name: "NginX injector",
-      })
-    );
-  } else {
-    res.end("Successfully started a server");
+
+  console.log("Url: " + req.url);
+  console.log("Тип запроса: " + req.method);
+  console.log("User-Agent: " + req.headers["user-agent"]);
+  console.log("Все заголовки");
+  // console.log(req.headers);
+  console.log(req.headers.host);
+  console.log(req.headers['x-real-ip']);
+
+  if (urlPath === "/app2/overview") {
+    res.writeHead(200, {"Content-Type": "application/json"});
+
+    res.end(JSON.stringify({
+      globCnt : globCnt++,
+      urlPath,
+      msg : "overview assept"
+    }));
+
+    return;
   }
+
+  res.writeHead(200, {"Content-Type": "application/json"});
+  res.end(JSON.stringify({
+    p:"Вася",
+    urlPath
+  }));
 });
 
 server.listen(3000, "localhost", () => {
