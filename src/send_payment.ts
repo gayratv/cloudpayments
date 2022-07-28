@@ -1,18 +1,12 @@
 import axios, { AxiosInstance } from 'axios';
 
-// DOTENV
-import dotenv from 'dotenv';
-dotenv.config();
-console.log('USERNAME');
-console.log(process.env.USERNAME1);
-
 const aInst: AxiosInstance = axios.create({
   baseURL: 'https://api.cloudpayments.ru/payments/cards/charge',
 });
 
 // Параметры запроса:
 
-type PayerObject = {
+export type PayerObject = {
   FirstName?: string;
   LastName?: string;
   MiddleName?: string;
@@ -25,7 +19,7 @@ type PayerObject = {
   Postcode?: string;
 };
 
-interface PaymentData {
+export interface PaymentData {
   Amount: number; //	Numeric	Обязательный	Сумма платежа
   Currency?: string; //	String	Необязательный	Валюта: RUB/USD/EUR/GBP (см. справочник). Если параметр не передан, то по умолчанию принимает значение RUB
   IpAddress: string; //	Обязательный	IP-адрес плательщика
@@ -41,7 +35,7 @@ interface PaymentData {
   JsonData?: any; //	Json	Необязательный	Любые другие данные, которые будут связаны с транзакцией, в том числе инструкции для создания подписки или формирования онлайн-чека должны обёртываться в объект cloudpayments. Мы зарезервировали названия следующих параметров и отображаем их содержимое в реестре операций, выгружаемом в Личном Кабинете: name, firstName, middleName, lastName, nick, phone, address, comment, birthDate.
 }
 
-async function sendMoney(p: PaymentData) {
+export async function sendMoney(p: PaymentData) {
   try {
     console.log('Start post');
     const response = await aInst.post('', p, {
@@ -51,17 +45,21 @@ async function sendMoney(p: PaymentData) {
       },
     });
 
-    // console.log(response);
+    /* // console.log(response);
     console.log(' data', response.data);
     console.log('///////////////////');
     console.log(' status', response.status);
     console.log(' statusText', response.statusText);
     console.log('///////////////////');
-    console.log(' headers', response.headers);
+    console.log(' headers', response.headers);*/
+
+    return response;
   } catch (err) {
     console.error((err as Error).message);
+    return new Error('непредвиденная ошибка в post payments/cards/charge');
   }
 }
+/*
 
 async function main() {
   const p: PaymentData = {
@@ -76,3 +74,4 @@ async function main() {
 (async () => {
   await main();
 })();
+*/

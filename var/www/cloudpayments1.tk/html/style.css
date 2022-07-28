@@ -216,3 +216,7 @@ button, input, optgroup, select, textarea {
 #paysend:disabled {
   background-color: gray;
 }
+
+input:invalid {
+  border: 2px dashed red;
+}

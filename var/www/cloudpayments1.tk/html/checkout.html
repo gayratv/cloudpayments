@@ -51,14 +51,14 @@
         <div class="col-12">
           <label for="c_invoice_id" class="form-label">Invoice ID</label>
           <div class="input-group ">
-            <input type="text" class="form-control" id="c_invoice_id"  placeholder="Invoice ID" value="123" >
+            <input type="text" class="form-control" id="c_invoice_id"  required placeholder="Invoice ID" value="123" >
           </div>
         </div>
 
         <div class="col-12">
           <label for="c_amount" class="form-label">Amount (сумма)</label>
           <div class="input-group ">
-            <input type="text" class="form-control" id="c_amount"  placeholder="Invoice ID" value="123" >
+            <input type="text" min="1" class="form-control" id="c_amount" required placeholder="Invoice ID" value="123" >
           </div>
         </div>
 
@@ -83,7 +83,7 @@
 <script>
   var cryptogramStore = "error";
 
-  function submitPayment(ev) {
+  async function submitPayment(ev) {
     ev.preventDefault();
     ev.stopPropagation();
 
@@ -91,21 +91,20 @@
       alert( 'Криптограмма отсутствует');
       return;
     }
-    console.log('submitPayment');
+    console.log(await postCardData());
   }
 
 
   function handleSubmit(ev) {
     ev.preventDefault();
-    console.log('hit', ev.target);
     const checkout = new cp.Checkout({
       publicId: 'pk_db89d751558aa612a18e7704d0d31',
       container: document.getElementById("checkoutForm")
     });
     checkout.createPaymentCryptogram()
       .then((cryptogram) => {
-        console.log('УСПЕШНО платеж послан');
-        console.log(cryptogram); // криптограмма
+        // console.log('УСПЕШНО платеж послан');
+        // console.log(cryptogram); // криптограмма
         cryptogramStore=cryptogram;
 
         const text=        document.getElementById('r_crypto');
@@ -122,10 +121,34 @@
     const frm = document.getElementById('checkoutForm');
     frm.addEventListener('submit', handleSubmit);
     document.getElementById('paysend').addEventListener('click',submitPayment);
-    console.log('reg called');
   }
 
   reg();
+
+  const postUtl = "http://localhost:3000/app2/rcvcard"
+
+  async function postCardData() {
+
+    const amount=document.getElementById('c_amount').value;
+    if (! amount || amount <1) {
+      alert('введите правильное значение amount');
+      return ;
+    }
+    const response = await fetch(postUtl, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      mode: "cors",
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        cryptogramm: cryptogramStore,
+        invoiceID: document.getElementById('c_invoice_id').value,
+        amount: amount,
+      })
+    });
+    return await response.json(); // parses JSO
+  }
 
 </script>
 

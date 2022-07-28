@@ -5,3 +5,20 @@ set timestamp= CurrentUtcTimestamp()
 where id="1dads"
 
 delete  from payments where id='sdf';
+
+
+DECLARE  $id AS Utf8;
+DECLARE  $Amount as Double;
+DECLARE  $InvoiceId as Utf8;
+DECLARE  $IpUser as Utf8;
+DECLARE  $Cryptogam as Utf8;
+
+$id='1'u;
+$Amount=9.15;
+$InvoiceId="1";
+$IpUser="192.168.15.15";
+$Cryptogam="as qqwdqwdqd"u;
+
+
+upsert into payments (id, Amount, InvoiceId, IpUser, Cryptogam)
+  values ($id, $Amount,$InvoiceId,$IpUser,$Cryptogam);
