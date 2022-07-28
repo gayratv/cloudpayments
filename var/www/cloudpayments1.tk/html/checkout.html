@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="col">
+  <form id="checkoutForm" class="mx-auto">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Card data</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Past some card data ot use default
+        </h6>
+
+        <div class="col-12">
+          <label for="c_cardnumber" class="form-label">Card number</label>
+          <div class="input-group has-validation">
+            <input type="text" class="form-control" id="c_cardnumber" data-cp="cardNumber" placeholder=""
+                   value="4242 4242 4242 4242" required="">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3-small">
+            <label for="c_expire_mm" class="form-label">MM</label>
+            <input type="text" class="form-control text-sm-start ps-1" id="c_expire_mm" data-cp="expDateMonth" placeholder="" value="01"
+                   required="">
+          </div>
+          <div class="col-sm-3-small">
+            <label for="c_expire_yy" class="form-label">YY</label>
+            <input type="text" class="form-control text-sm-start ps-1" id="c_expire_yy" data-cp="expDateYear" placeholder="" value="25"
+                   required="">
+          </div>
+
+          <div class="col-sm-3">
+            <label for="c_secret" class="form-label">CVV</label>
+            <div class="input-group has-validation">
+              <input type="text" class="form-control" id="c_secret" data-cp="cvv" placeholder="777" value="777" required="">
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label for="c_name" class="form-label">Name</label>
+          <div class="input-group has-validation">
+            <input type="text" class="form-control" id="c_name" data-cp="name" placeholder="Name" required="" value="Chad Virgin">
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label for="c_invoice_id" class="form-label">Invoice ID</label>
+          <div class="input-group has-validation">
+            <input type="text" class="form-control" id="c_invoice_id"  placeholder="Invoice ID" value="123" >
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="w-100 btn btn-primary btn-lg" type="submit" id="c_generate">
+      Create cryptogram
+    </button>
+  </form>
+</div>
+
+<script src="https://checkout.cloudpayments.ru/checkout.js"></script>
+<script>
+
+  function handleSubmit(ev) {
+    ev.preventDefault();
+    console.log('hit', ev.target);
+    const checkout = new cp.Checkout({
+      publicId: 'pk_db89d751558aa612a18e7704d0d31',
+      container: document.getElementById("checkoutForm")
+    });
+    checkout.createPaymentCryptogram()
+      .then((cryptogram) => {
+        console.log('УСПЕШНО платеж послан');
+        console.log(cryptogram); // криптограмма
+      }).catch((errors) => {
+      console.log(errors)
+    });
+  }
+
+  function reg() {
+    const frm = document.getElementById('checkoutForm');
+    frm.addEventListener('submit', handleSubmit);
+    console.log('reg called');
+  }
+
+  reg();
+
+</script>
+</body>
+</html>

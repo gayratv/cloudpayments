@@ -15,6 +15,7 @@ node /var/www/cloudpayments1.tk/node/server.js
 nodemon server.js
 
 cd /var/www/cloudpayments1.tk/node
+ts-node ./src/send_payment.ts
 nodemon server.js
 
 /var/www/cloudpayments1.tk/node/node_modules/.bin/nodemon /var/www/cloudpayments1.tk/node/server.js

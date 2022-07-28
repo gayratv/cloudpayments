@@ -1,2 +1,25 @@
-.idea
-node_modules
+/node_modules/
+/build/
+/lib/
+/dist/
+/docs/
+.idea/*
+
+.DS_Store
+coverage
+*.log
+.env
+pipser.log
+docker-pipser/mysql-data
+docker-pipser/data
+/data/
+docker-pipser/backup
+
+package-lock.json
+.env*.local
+/docker-pipser/schema/p.sql
+/log.srv.txt
+/puppeteer/
+
+# ключ YDB
+/service_account_key_file.json
