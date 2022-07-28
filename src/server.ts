@@ -1,4 +1,9 @@
-const http = require('http');
+import { initDotEnv } from './utils/dotenv-init';
+initDotEnv();
+
+import http from 'http';
+// @ts-ignore
+import { recieveCardData } from './routes/recieve-card-data';
 
 let globCnt = 0;
 
@@ -17,6 +22,16 @@ const server = http.createServer((req, res) => {
   // console.log(req.headers);
   console.log('req.headers.host ', req.headers.host);
   console.log("['x-real-ip'] ", req.headers['x-real-ip']);
+  console.log('///////////////////////////////////////////');
+  console.log(req);
+
+  switch (urlPath) {
+    case 'app2/rcvcard':
+      // recieveCardData();
+      break;
+    default:
+      console.log('sss');
+  }
 
   if (urlPath === '/app2/overview') {
     res.writeHead(200, { 'Content-Type': 'application/json' });

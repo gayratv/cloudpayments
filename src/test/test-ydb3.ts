@@ -1,5 +1,5 @@
 import { Types, Ydb } from 'ydb-sdk';
-import { createTypedValue, driver, initDbLocal } from './utils/database';
+import { createTypedValue, driver, initDbLocal } from '../utils/database';
 
 export async function upsertTable() {
   return await driver.tableClient.withSession(async (session) => {

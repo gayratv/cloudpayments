@@ -1,5 +1,5 @@
 import { TypedData } from 'ydb-sdk';
-import { driver, initDbLocal } from './utils/database';
+import { driver, initDbLocal } from '../utils/database';
 
 export interface Ipayments {
   id: string;
