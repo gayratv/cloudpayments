@@ -1,0 +1,7 @@
+SELECT CurrentUtcTimestamp();
+
+update payments
+set timestamp= CurrentUtcTimestamp()
+where id="1dads"
+
+delete  from payments where id='sdf';

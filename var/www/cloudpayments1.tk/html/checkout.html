@@ -43,17 +43,25 @@
 
         <div class="col-12">
           <label for="c_name" class="form-label">Name</label>
-          <div class="input-group has-validation">
+          <div class="input-group ">
             <input type="text" class="form-control" id="c_name" data-cp="name" placeholder="Name" required="" value="Chad Virgin">
           </div>
         </div>
 
         <div class="col-12">
           <label for="c_invoice_id" class="form-label">Invoice ID</label>
-          <div class="input-group has-validation">
+          <div class="input-group ">
             <input type="text" class="form-control" id="c_invoice_id"  placeholder="Invoice ID" value="123" >
           </div>
         </div>
+
+        <div class="col-12">
+          <label for="c_amount" class="form-label">Amount (сумма)</label>
+          <div class="input-group ">
+            <input type="text" class="form-control" id="c_amount"  placeholder="Invoice ID" value="123" >
+          </div>
+        </div>
+
       </div>
     </div>
     <button class="w-100 btn btn-primary btn-lg" type="submit" id="c_generate">
@@ -61,9 +69,31 @@
     </button>
   </form>
 </div>
+<div class="col-result">
+  <p>Результирующая криптограмма</p>
+  <textarea readonly class="inp-result" id="r_crypto"    >
+    появится после нажатия на кнопку "Create cryptogram"
+  </textarea>
+  <button class="w-100 btn btn-primary btn-lg" id="paysend" disabled >
+    Отправить платеж на сервер
+  </button>
+</div>
 
 <script src="https://checkout.cloudpayments.ru/checkout.js"></script>
 <script>
+  var cryptogramStore = "error";
+
+  function submitPayment(ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    if (cryptogramStore === "error") {
+      alert( 'Криптограмма отсутствует');
+      return;
+    }
+    console.log('submitPayment');
+  }
+
 
   function handleSubmit(ev) {
     ev.preventDefault();
@@ -76,6 +106,13 @@
       .then((cryptogram) => {
         console.log('УСПЕШНО платеж послан');
         console.log(cryptogram); // криптограмма
+        cryptogramStore=cryptogram;
+
+        const text=        document.getElementById('r_crypto');
+        text.innerText=cryptogram;
+        text.style.height = (text.scrollHeight) + 'px';
+
+        document.getElementById('paysend').disabled = false;
       }).catch((errors) => {
       console.log(errors)
     });
@@ -84,11 +121,13 @@
   function reg() {
     const frm = document.getElementById('checkoutForm');
     frm.addEventListener('submit', handleSubmit);
+    document.getElementById('paysend').addEventListener('click',submitPayment);
     console.log('reg called');
   }
 
   reg();
 
 </script>
+
 </body>
 </html>
