@@ -14,7 +14,7 @@ export class IPaymentsStruct {
   PaymentCurrency?: string;
   PaymentCurrencyCode?: number;
   State?: string;
-  TermUrl?: string;
+  AcsUrl?: string;
   TransactionId?: number;
   timestamp?: Date;
 
@@ -33,7 +33,7 @@ export class IPaymentsStruct {
     PaymentCurrency: PT.UTF8,
     PaymentCurrencyCode: PT.UINT64,
     State: PT.UTF8,
-    TermUrl: PT.UTF8,
+    AcsUrl: PT.UTF8,
     TransactionId: PT.UINT64,
     timestamp: PT.TIMESTAMP,
   } as const;

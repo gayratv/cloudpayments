@@ -34,32 +34,6 @@ export async function recieveCardData(
     return;
   }
   const id = invoiceID;
-  /*
-
-  // Записать запрос в базу
-  await driver.tableClient.withSession(async (session) => {
-    const query = `
-        DECLARE  $id AS Utf8;
-        DECLARE  $Amount as Double;
-        DECLARE  $InvoiceId as Utf8;
-        DECLARE  $IpUser as Utf8;
-        DECLARE  $Cryptogam as Utf8;
-
-        upsert into payments (id, Amount, InvoiceId, IpUser, Cryptogam)
-          values ($id, $Amount,$InvoiceId,$IpUser,$Cryptogam)
-    `;
-
-
-    const params = {
-      $id: createTypedValue(Types.UTF8, id),
-      $Amount: createTypedValue(Types.DOUBLE, amount),
-      $InvoiceId: createTypedValue(Types.UTF8, invoiceID),
-      $IpUser: createTypedValue(Types.UTF8, realIP),
-      $Cryptogam: createTypedValue(Types.UTF8, cryptogramm),
-    };
-
-    await session.executeQuery(query, params);
-*/
 
   // Записать запрос в базу
   const clientData = new IPaymentsStruct(id);
@@ -84,17 +58,20 @@ export async function recieveCardData(
 
   if ('data' in sendMoneyResponce) {
     // console.log(response);
-    console.log(' data', sendMoneyResponce.data);
-    console.log('///////////////////');
-    console.log(' status', sendMoneyResponce.status);
-    console.log(' statusText', sendMoneyResponce.statusText);
-    console.log('///////////////////');
-    console.log(' headers', sendMoneyResponce.headers);
+    // console.log(' data', sendMoneyResponce.data);
+    // console.log('///////////////////');
+    // console.log(' status', sendMoneyResponce.status);
+    // console.log(' statusText', sendMoneyResponce.statusText);
+    // console.log('///////////////////');
+    // console.log(' headers', sendMoneyResponce.headers);
 
-    // await start3DSecure(
-    //   id,
-    //   sendMoneyResponce as unknown as IcloudResponcePayment
-    // );
+    await start3DSecure(
+      id,
+      sendMoneyResponce, //as unknown as IcloudResponcePayment
+      res
+    );
+    // start3DSecure ответ выставит сама
+    return;
   }
 
   res.status(200).end(JSON.stringify({ status: 'OK' }));
@@ -278,18 +255,34 @@ TermUrl — адрес на вашем сайте для возврата пла
 // @ts-ignore
 async function start3DSecure(
   id: string,
-  sendMoneyResponce: IcloudResponcePayment
+  sendMoneyResponce_row: any,
+  res: Response
 ) {
+  if (!('data' in sendMoneyResponce_row)) {
+    res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 2 ' }));
+    return;
+  }
+  const sendMoneyResponce: IcloudResponcePayment =
+    sendMoneyResponce_row.data as IcloudResponcePayment;
   if (IcloudResponcePayment_need3Dauth(sendMoneyResponce)) {
     // ------- нужна 3D secure -----------
     // для начала сохраним дополнительные параметры
     // Записать запрос в базу
+    if (sendMoneyResponce.Success) {
+      res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 3 ' }));
+      return;
+    }
 
     const { TransactionId, PaReq, AcsUrl } = sendMoneyResponce.Model;
     const storeVal = new IPaymentsStruct(id);
     storeVal.TransactionId = TransactionId;
     storeVal.PaReq = PaReq;
-    storeVal.TermUrl = AcsUrl;
+    storeVal.AcsUrl = AcsUrl;
     await storeVal.upsertTable();
+    // @ts-ignore
+    storeVal.TermUrl = `https://cloudpayments1.tk/succespay.html?id=${id}`;
+    res.status(200).end(JSON.stringify(storeVal));
+    return;
   }
+  res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 1 ' }));
 }

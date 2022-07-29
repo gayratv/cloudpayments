@@ -24,19 +24,22 @@
         <div class="row">
           <div class="col-sm-3-small">
             <label for="c_expire_mm" class="form-label">MM</label>
-            <input type="text" class="form-control text-sm-start ps-1" id="c_expire_mm" data-cp="expDateMonth" placeholder="" value="01"
+            <input type="text" class="form-control text-sm-start ps-1" id="c_expire_mm" data-cp="expDateMonth"
+                   placeholder="" value="01"
                    required="">
           </div>
           <div class="col-sm-3-small">
             <label for="c_expire_yy" class="form-label">YY</label>
-            <input type="text" class="form-control text-sm-start ps-1" id="c_expire_yy" data-cp="expDateYear" placeholder="" value="25"
+            <input type="text" class="form-control text-sm-start ps-1" id="c_expire_yy" data-cp="expDateYear"
+                   placeholder="" value="25"
                    required="">
           </div>
 
           <div class="col-sm-3">
             <label for="c_secret" class="form-label">CVV</label>
             <div class="input-group has-validation">
-              <input type="text" class="form-control" id="c_secret" data-cp="cvv" placeholder="777" value="777" required="">
+              <input type="text" class="form-control" id="c_secret" data-cp="cvv" placeholder="777" value="777"
+                     required="">
             </div>
           </div>
         </div>
@@ -44,21 +47,22 @@
         <div class="col-12">
           <label for="c_name" class="form-label">Name</label>
           <div class="input-group ">
-            <input type="text" class="form-control" id="c_name" data-cp="name" placeholder="Name" required="" value="Chad Virgin">
+            <input type="text" class="form-control" id="c_name" data-cp="name" placeholder="Name" required=""
+                   value="Chad Virgin">
           </div>
         </div>
 
         <div class="col-12">
           <label for="c_invoice_id" class="form-label">Invoice ID</label>
           <div class="input-group ">
-            <input type="text" class="form-control" id="c_invoice_id"  required placeholder="Invoice ID" value="123" >
+            <input type="text" class="form-control" id="c_invoice_id" required placeholder="Invoice ID" value="123">
           </div>
         </div>
 
         <div class="col-12">
           <label for="c_amount" class="form-label">Amount (сумма)</label>
           <div class="input-group ">
-            <input type="text" min="1" class="form-control" id="c_amount" required placeholder="Invoice ID" value="123" >
+            <input type="text" min="1" class="form-control" id="c_amount" required placeholder="Invoice ID" value="123">
           </div>
         </div>
 
@@ -71,20 +75,27 @@
 </div>
 <div class="col-result">
   <p>Результирующая криптограмма</p>
-  <textarea readonly class="inp-result" id="r_crypto"    >
+  <textarea readonly class="inp-result" id="r_crypto">
     появится после нажатия на кнопку "Create cryptogram"
   </textarea>
-  <button class="w-100 btn btn-primary btn-lg" id="paysend" disabled >
+  <button class="w-100 btn btn-primary btn-lg" id="paysend" disabled>
     Отправить платеж на сервер
   </button>
 </div>
 
-<form name="downloadForm" action="AcsUrl" method="POST" style="visibility:hidden">
-  <input type="hidden" name="PaReq" value="eJxVUdtugkAQ/RXDe9mLgo0Z1nhpU9PQasWmPhLYAKksuEChfn13uVR9mGTO7MzZM2dg3qSn0Q+X\nRZIJxyAmNkZcBFmYiMgxDt7zw6MxZ+DFkvP1ngeV5AxcXhR+xEdJ6BhpEZnEYLBdfPAzg56JKSKT\nAhqgGpFB7IuSgR+cl5s3NqFTG2NAPYSUy82aETqeWPYUUAdB+ClnwSmrwtz/TbkoC0BtDYKsEqX8\nZfZkDGgAUMkTi8synyFU17V5N2nKCpBuAHRVs610VijCJgmZu17UXTxhFWP34l7evYPlegsHkO6A\n0C85o5hMsI3piNIZHc+IBaitg59qJYzgdrUOQK7/WNy+3FZAeSqV5cMqAwLe5JlQwpny8T8HdFW8\netFuBqUyahV+Hjf27vWCaSx22fe+KY6kXKZfJLK1x22TZkyUS8QiHaUGgDQN6s+H+tOq7O7kf8hd\nt30=">
-  <input type="hidden" name="MD" value="504">
-  <input type="hidden" name="TermUrl" value="https://example.com/post3ds?order=1234567">
+<!--<form name="f3DsecureForm" action="AcsUrl" method="POST" style="visibility:hidden">
+  <input type="hidden" name="PaReq" id="w_PaReq" value="eJxVUdtugkAQ/RXDe9mLgo0Z1nhpU9PQasWmPhLYAKksuEChfn13uVR9mGTO7MzZM2dg3qSn0Q+X\nRZIJxyAmNkZcBFmYiMgxDt7zw6MxZ+DFkvP1ngeV5AxcXhR+xEdJ6BhpEZnEYLBdfPAzg56JKSKT\nAhqgGpFB7IuSgR+cl5s3NqFTG2NAPYSUy82aETqeWPYUUAdB+ClnwSmrwtz/TbkoC0BtDYKsEqX8\nZfZkDGgAUMkTi8synyFU17V5N2nKCpBuAHRVs610VijCJgmZu17UXTxhFWP34l7evYPlegsHkO6A\n0C85o5hMsI3piNIZHc+IBaitg59qJYzgdrUOQK7/WNy+3FZAeSqV5cMqAwLe5JlQwpny8T8HdFW8\netFuBqUyahV+Hjf27vWCaSx22fe+KY6kXKZfJLK1x22TZkyUS8QiHaUGgDQN6s+H+tOq7O7kf8hd\nt30=">
+  <input type="hidden" name="MD" id="w_MD" value="504">
+  <input type="hidden" name="TermUrl" id="w_TermUrl" value="https://example.com/post3ds?order=1234567">
+</form>-->
+
+
+<form name="f3DsecureForm" id="f3DsecureForm" action="AcsUrl" method="POST">
+  <input type="text" name="PaReq" id="w_PaReq"
+         value="eJxVUdtugkAQ/RXDe9mLgo0Z1nhpU9PQasWmPhLYAKksuEChfn13uVR9mGTO7MzZM2dg3qSn0Q+X\nRZIJxyAmNkZcBFmYiMgxDt7zw6MxZ+DFkvP1ngeV5AxcXhR+xEdJ6BhpEZnEYLBdfPAzg56JKSKT\nAhqgGpFB7IuSgR+cl5s3NqFTG2NAPYSUy82aETqeWPYUUAdB+ClnwSmrwtz/TbkoC0BtDYKsEqX8\nZfZkDGgAUMkTi8synyFU17V5N2nKCpBuAHRVs610VijCJgmZu17UXTxhFWP34l7evYPlegsHkO6A\n0C85o5hMsI3piNIZHc+IBaitg59qJYzgdrUOQK7/WNy+3FZAeSqV5cMqAwLe5JlQwpny8T8HdFW8\netFuBqUyahV+Hjf27vWCaSx22fe+KY6kXKZfJLK1x22TZkyUS8QiHaUGgDQN6s+H+tOq7O7kf8hd\nt30=">
+  <input type="text" name="MD" id="w_MD" value="504">
+  <input type="text" name="TermUrl" id="w_TermUrl" value="https://example.com/post3ds?order=1234567">
 </form>
-<!--  function submitForm() { downloadForm.submit(); }-->
 
 
 <script src="https://checkout.cloudpayments.ru/checkout.js"></script>
@@ -96,10 +107,19 @@
     ev.stopPropagation();
 
     if (cryptogramStore === "error") {
-      alert( 'Криптограмма отсутствует');
+      alert('Криптограмма отсутствует');
       return;
     }
-    console.log(await postCardData());
+    const dataFor3D = await postCardData();
+    console.log(dataFor3D);
+    document.getElementById('w_PaReq').value = dataFor3D.PaReq;
+    document.getElementById('w_MD').value = dataFor3D.TransactionId;
+    document.getElementById('w_TermUrl').value = dataFor3D.TermUrl;
+    document.getElementById('f3DsecureForm').action=dataFor3D.AcsUrl;
+
+    setTimeout(() => {
+      f3DsecureForm.submit();
+    }, 5000);
   }
 
 
@@ -113,35 +133,35 @@
       .then((cryptogram) => {
         // console.log('УСПЕШНО платеж послан');
         // console.log(cryptogram); // криптограмма
-        cryptogramStore=cryptogram;
+        cryptogramStore = cryptogram;
 
-        const text=        document.getElementById('r_crypto');
-        text.innerText=cryptogram;
+        const text = document.getElementById('r_crypto');
+        text.innerText = cryptogram;
         text.style.height = (text.scrollHeight) + 'px';
 
         document.getElementById('paysend').disabled = false;
       }).catch((errors) => {
-      console.log(errors)
+      console.log(errors);
     });
   }
 
   function reg() {
     const frm = document.getElementById('checkoutForm');
     frm.addEventListener('submit', handleSubmit);
-    document.getElementById('paysend').addEventListener('click',submitPayment);
+    document.getElementById('paysend').addEventListener('click', submitPayment);
   }
 
   reg();
 
   // const postUtl = "http://localhost:3000/app2/rcvcard"
-  const postUtl = "https://cloudpayments1.tk/app2/rcvcard"
+  const postUtl = "https://cloudpayments1.tk/app2/rcvcard";
 
   async function postCardData() {
 
-    const amount=document.getElementById('c_amount').value;
-    if (! amount || amount <1) {
+    const amount = document.getElementById('c_amount').value;
+    if (!amount || amount < 1) {
       alert('введите правильное значение amount');
-      return ;
+      return;
     }
     const response = await fetch(postUtl, {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
