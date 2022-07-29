@@ -117,3 +117,10 @@ systemctl restart nginx
 
 - `curl http://cloudpayments1.tk` — редирект
 - `curl https://cloudpayments1.tk` — сайт
+-
+
+ — редирект
+curl http://makeupkitchen.ga
+
+— сайт
+curl https://makeupkitchen.ga
