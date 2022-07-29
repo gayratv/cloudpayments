@@ -61,3 +61,16 @@ export function createTypedValue(type: Ydb.IType, val: any): Ydb.ITypedValue {
   const c1 = primitiveTypeToValue[type.typeId!];
   return { type, value: { [c1]: val } };
 }
+
+// TypedValues
+// static int8(value: number): ITypedValue {
+//   return TypedValues.primitive(Type.PrimitiveTypeId.INT8, value);
+// }
+
+// export function withTypeOptions(options: TypedDataOptions) {
+//   return function<T extends Function>(constructor: T): T & {__options: TypedDataOptions} {
+//     return _.merge(constructor, {__options: options});
+//   }
+// }
+
+// static optionalNull(type: Ydb.IType): Ydb.ITypedValue

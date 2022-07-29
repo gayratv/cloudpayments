@@ -45,13 +45,15 @@ export async function sendMoney(p: PaymentData) {
       },
     });
 
-    /* // console.log(response);
+    /*
+    // console.log(response);
     console.log(' data', response.data);
     console.log('///////////////////');
     console.log(' status', response.status);
     console.log(' statusText', response.statusText);
     console.log('///////////////////');
-    console.log(' headers', response.headers);*/
+    console.log(' headers', response.headers);
+    */
 
     return response;
   } catch (err) {
