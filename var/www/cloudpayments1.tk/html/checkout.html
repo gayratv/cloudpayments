@@ -115,11 +115,11 @@
     document.getElementById('w_PaReq').value = dataFor3D.PaReq;
     document.getElementById('w_MD').value = dataFor3D.TransactionId;
     document.getElementById('w_TermUrl').value = dataFor3D.TermUrl;
-    document.getElementById('f3DsecureForm').action=dataFor3D.AcsUrl;
+    document.getElementById('f3DsecureForm').action = dataFor3D.AcsUrl;
 
-    setTimeout(() => {
-      f3DsecureForm.submit();
-    }, 5000);
+
+    f3DsecureForm.submit();
+
   }
 
 

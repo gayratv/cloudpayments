@@ -6,6 +6,8 @@ import express from 'express';
 import cors from 'cors';
 
 import { recieveCardData } from './routes/recieve-card-data';
+import { paynotify } from './routes/pay_notify';
+import { succesPay } from './routes/succes-pay';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -23,12 +25,22 @@ app.get('/', (_req, res) => {
 });
 
 // http://localhost:3000/app2/rcvcard?id=5
-app.post('/app2/rcvcard', (req, res) => {
+app.post('/app2/rcvcard', async (req, res) => {
   // console.log('query :', req.query); // query : { id: '5' }
   // console.log('params :', req.params);
   // console.log(req.body);
   // console.log(req.headers);
-  recieveCardData(req, res);
+  await recieveCardData(req, res);
+});
+
+app.post('/app2/paynotify', async (req, res) => {
+  console.log('paynotify');
+  await paynotify(req, res);
+});
+
+app.post('/app2/succespay', async (req, res) => {
+  console.log('/app2/succespay');
+  await succesPay(req, res);
 });
 
 app.listen(port, () => {

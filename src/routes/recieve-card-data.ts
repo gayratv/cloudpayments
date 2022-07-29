@@ -18,6 +18,7 @@ export async function recieveCardData(
   req: Request,
   res: Response
 ): Promise<void> {
+  console.log('recieveCardData');
   let { cryptogramm, invoiceID, amount } = req.body;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   // @ts-ignore
@@ -43,6 +44,8 @@ export async function recieveCardData(
   clientData.Cryptogram = cryptogramm;
   await clientData.upsertTable();
 
+  console.log('запрос на платеж записан в базу');
+
   // ************************************
   // пошлем запрос на проведение транзакции
   const p: PaymentData = {
@@ -51,7 +54,9 @@ export async function recieveCardData(
     CardCryptogramPacket: cryptogramm,
     InvoiceId: invoiceID,
   };
+  console.log('посылаю sendMoney');
   const sendMoneyResponce = await sendMoney(p);
+  console.log('получен ответ sendMoney');
 
   //*************************************
   // если есть 3Dsecure - получим в ответ его
@@ -258,6 +263,7 @@ async function start3DSecure(
   sendMoneyResponce_row: any,
   res: Response
 ) {
+  console.log('start3DSecure');
   if (!('data' in sendMoneyResponce_row)) {
     res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 2 ' }));
     return;
@@ -280,7 +286,10 @@ async function start3DSecure(
     storeVal.AcsUrl = AcsUrl;
     await storeVal.upsertTable();
     // @ts-ignore
-    storeVal.TermUrl = `https://cloudpayments1.tk/succespay.html?id=${id}`;
+    // storeVal.TermUrl = `https://cloudpayments1.tk/succespay.html?id=${id}`;
+    // storeVal.TermUrl = `https://cloudpayments1.tk/succespay.html`;
+    storeVal.TermUrl = `https://cloudpayments1.tk/app2/succespay?id=${id}`;
+    console.log('start3DSecure возвращаю ответ ');
     res.status(200).end(JSON.stringify(storeVal));
     return;
   }
