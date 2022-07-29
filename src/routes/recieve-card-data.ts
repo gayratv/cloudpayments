@@ -1,10 +1,10 @@
 /* eslint-disable prefer-const */
 import { v4 as uuidv4 } from 'uuid';
-import { createTypedValue, driver } from '../utils/database';
-import { Types } from 'ydb-sdk';
+// import { createTypedValue, driver } from '../utils/database';
+// import { Types } from 'ydb-sdk';
 import { Request, Response } from 'express';
 import { PaymentData, sendMoney } from '../send_payment';
-import {IPaymentsStruct} from "../utils/ydb-ipayments";
+import { IPaymentsStruct } from '../utils/ydb-ipayments';
 
 /*
  В теле получим
@@ -33,7 +33,8 @@ export async function recieveCardData(
     res.status(400).end(JSON.stringify({ error: 'укажите криптограмму' }));
     return;
   }
-/*
+  const id = invoiceID;
+  /*
 
   // Записать запрос в базу
   await driver.tableClient.withSession(async (session) => {
@@ -48,7 +49,7 @@ export async function recieveCardData(
           values ($id, $Amount,$InvoiceId,$IpUser,$Cryptogam)
     `;
 
-    const id = invoiceID;
+
     const params = {
       $id: createTypedValue(Types.UTF8, id),
       $Amount: createTypedValue(Types.DOUBLE, amount),
@@ -60,42 +61,42 @@ export async function recieveCardData(
     await session.executeQuery(query, params);
 */
 
-    // Записать запрос в базу
-    const clientData =new IPaymentsStruct(invoiceID);
-    clientData.Amount=amount;
-    clientData.InvoiceId=invoiceID;
-    clientData.IpUser=realIP as string;
-    clientData.Cryptogram=cryptogramm;
-    clientData.upsertTable();
+  // Записать запрос в базу
+  const clientData = new IPaymentsStruct(id);
+  clientData.Amount = amount;
+  clientData.InvoiceId = invoiceID;
+  clientData.IpUser = realIP as string;
+  clientData.Cryptogram = cryptogramm;
+  await clientData.upsertTable();
 
-    // ************************************
-    // пошлем запрос на проведение транзакции
-    const p: PaymentData = {
-      Amount: amount,
-      IpAddress: realIP as string,
-      CardCryptogramPacket: cryptogramm,
-      InvoiceId: invoiceID,
-    };
-    const sendMoneyResponce = await sendMoney(p);
+  // ************************************
+  // пошлем запрос на проведение транзакции
+  const p: PaymentData = {
+    Amount: amount,
+    IpAddress: realIP as string,
+    CardCryptogramPacket: cryptogramm,
+    InvoiceId: invoiceID,
+  };
+  const sendMoneyResponce = await sendMoney(p);
 
-    //*************************************
-    // если есть 3Dsecure - получим в ответ его
+  //*************************************
+  // если есть 3Dsecure - получим в ответ его
 
-    if ('data' in sendMoneyResponce) {
-      // console.log(response);
-      console.log(' data', sendMoneyResponce.data);
-      console.log('///////////////////');
-      console.log(' status', sendMoneyResponce.status);
-      console.log(' statusText', sendMoneyResponce.statusText);
-      console.log('///////////////////');
-      console.log(' headers', sendMoneyResponce.headers);
+  if ('data' in sendMoneyResponce) {
+    // console.log(response);
+    console.log(' data', sendMoneyResponce.data);
+    console.log('///////////////////');
+    console.log(' status', sendMoneyResponce.status);
+    console.log(' statusText', sendMoneyResponce.statusText);
+    console.log('///////////////////');
+    console.log(' headers', sendMoneyResponce.headers);
 
-      await start3DSecure(
-        id,
-        sendMoneyResponce as unknown as IcloudResponcePayment
-      );
-    }
-  });
+    // await start3DSecure(
+    //   id,
+    //   sendMoneyResponce as unknown as IcloudResponcePayment
+    // );
+  }
+
   res.status(200).end(JSON.stringify({ status: 'OK' }));
 }
 
@@ -258,6 +259,12 @@ export type IcloudResponcePayment =
   | IcloudResponcePayment_canceled
   | IcloudResponcePayment_SUCCES;
 
+function IcloudResponcePayment_need3Dauth(
+  o: IcloudResponcePayment
+): o is IcloudResponcePayment_need3Dauth {
+  return (o as IcloudResponcePayment_need3Dauth).Model.PaReq !== undefined;
+}
+
 // если Success = false и AcsUrl не null - то перйти на AcsUrl
 
 /*
@@ -268,35 +275,21 @@ MD — параметр TransactionId из ответа сервера;
 PaReq — одноименный параметр из ответа сервера;
 TermUrl — адрес на вашем сайте для возврата плательщика после аутентификации.
  */
+// @ts-ignore
 async function start3DSecure(
   id: string,
   sendMoneyResponce: IcloudResponcePayment
 ) {
-  if ('PaReq' in sendMoneyResponce) {
+  if (IcloudResponcePayment_need3Dauth(sendMoneyResponce)) {
     // ------- нужна 3D secure -----------
     // для начала сохраним дополнительные параметры
     // Записать запрос в базу
-    await driver.tableClient.withSession(async (session) => {
-      const query = `
-        DECLARE  $id AS Utf8;
-        DECLARE $TransactionId as Uint64;
-        DECLARE $PaReq as Utf8;
-        DECLARE $TermUr as Utf8;
 
-        upsert into payments (id, TransactionId, PaReq, TermUrl)
-          values ($id, $TransactionId, $PaReq, $TermUrl)
-    `;
-      const {TransactionId, PaReq, TermUrl} = sendMoneyResponce.Model;
-
-      const params = {
-        $id: createTypedValue(Types.UTF8, id),
-        $Amount: createTypedValue(Types.DOUBLE, amount),
-        $InvoiceId: createTypedValue(Types.UTF8, invoiceID),
-        $IpUser: createTypedValue(Types.UTF8, realIP),
-        $Cryptogam: createTypedValue(Types.UTF8, cryptogramm),
-      };
-
-      await session.executeQuery(query, params);
-
-    }
+    const { TransactionId, PaReq, AcsUrl } = sendMoneyResponce.Model;
+    const storeVal = new IPaymentsStruct(id);
+    storeVal.TransactionId = TransactionId;
+    storeVal.PaReq = PaReq;
+    storeVal.TermUrl = AcsUrl;
+    await storeVal.upsertTable();
+  }
 }
