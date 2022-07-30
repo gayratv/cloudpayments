@@ -1,4 +1,4 @@
-import { Ydb } from 'ydb-sdk';
+import { TypedData, Ydb } from 'ydb-sdk';
 import PT = Ydb.Type.PrimitiveTypeId;
 import { optionalYdbValue, requiredYdbValue } from './helpers';
 import { driver } from './database';
@@ -12,7 +12,7 @@ export class TableWorkMetaData {
 export class TableWork {
   public static refMetaData: TableWorkMetaData;
 
-  a() {
+  /*a() {
     const refMeta: TableWorkMetaData = (this.constructor as typeof TableWork)
       .refMetaData;
     console.log(refMeta);
@@ -21,7 +21,7 @@ export class TableWork {
   static b() {
     const refMeta: TableWorkMetaData = this.refMetaData;
     console.log(refMeta);
-  }
+  }*/
 
   getQuery() {
     const refMeta: TableWorkMetaData = (this.constructor as typeof TableWork)
@@ -76,6 +76,32 @@ export class TableWork {
       const params = this.getParams();
 
       return await session.executeQuery(query, params);
+    });
+  }
+
+  // static async getRowByPrimaryKey(primaryKey: any): Promise<TableWork> {
+  static async getRowByPrimaryKey<T extends TableWork>(
+    primaryKey: any
+  ): Promise<T | null> {
+    const refMeta: TableWorkMetaData = this.refMetaData;
+
+    const query = `
+        DECLARE $Param as ${PT[refMeta.getTypes[refMeta.primaryKey]]};
+        select * from ${refMeta.tableName}
+        where ${refMeta.primaryKey} = $Param;
+    `;
+    const params = {
+      $Param: requiredYdbValue(
+        refMeta.getTypes[refMeta.primaryKey],
+        primaryKey
+      ),
+    };
+
+    return await driver.tableClient.withSession(async (session) => {
+      const data = await session.executeQuery(query, params);
+      const resultSet = TypedData.createNativeObjects(data.resultSets[0]);
+      if (resultSet.length > 0) return resultSet[0] as unknown as T;
+      else return null;
     });
   }
 }

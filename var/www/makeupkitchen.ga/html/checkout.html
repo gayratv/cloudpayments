@@ -10,7 +10,7 @@
   <form id="checkoutForm" class="mx-auto">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Card data</h5>
+        <h5 class="card-title">Card data makeupkitchen </h5>
         <h6 class="card-subtitle mb-2 text-muted">Past some card data ot use default
         </h6>
 
@@ -68,17 +68,17 @@
 
       </div>
     </div>
-    <button class="w-100 btn btn-primary btn-lg" type="submit" id="c_generate">
-      Create cryptogram
-    </button>
+    <!--   <button class="w-100 btn btn-primary btn-lg" type="submit" id="c_generate">
+         Create cryptogram
+       </button>-->
   </form>
 </div>
 <div class="col-result">
   <p>Результирующая криптограмма</p>
-  <textarea readonly class="inp-result" id="r_crypto">
+  <textarea readonly class="inp-result" id="r_crypto" style="display:none">
     появится после нажатия на кнопку "Create cryptogram"
   </textarea>
-  <button class="w-100 btn btn-primary btn-lg" id="paysend" disabled>
+  <button class="w-100 btn btn-primary btn-lg" id="paysend">
     Отправить платеж на сервер
   </button>
 </div>
@@ -100,11 +100,26 @@
 
 <script src="https://checkout.cloudpayments.ru/checkout.js"></script>
 <script>
+  //  Настройки *************************
   var cryptogramStore = "error";
+  var BASE_URL = 'https://makeupkitchen.ga';
+  var PUBLIC_ID = 'pk_fa4606a6b92caa0e2d013af45a240';
+  var promice_SubmitPayment;
 
-  async function submitPayment(ev) {
+  //  Настройки *************************
+
+  function submitPayment1(ev) {
+    console.log('submitPayment1 start');
     ev.preventDefault();
     ev.stopPropagation();
+    promice_SubmitPayment = submitPayment();
+  }
+
+  async function submitPayment() {
+    console.log('submitPayment start');
+
+    await createCryptogramm();
+    console.log('cryptogramStore ', cryptogramStore);
 
     if (cryptogramStore === "error") {
       alert('Криптограмма отсутствует');
@@ -117,46 +132,29 @@
     document.getElementById('w_TermUrl').value = dataFor3D.TermUrl;
     document.getElementById('f3DsecureForm').action = dataFor3D.AcsUrl;
 
-
+    await logger('step3 f3DsecureForm.submit();');
     f3DsecureForm.submit();
 
   }
 
 
-  function handleSubmit(ev) {
-    ev.preventDefault();
+  async function createCryptogramm() {
     const checkout = new cp.Checkout({
-      publicId: 'pk_db89d751558aa612a18e7704d0d31',
+      publicId: PUBLIC_ID,
       container: document.getElementById("checkoutForm")
     });
-    checkout.createPaymentCryptogram()
-      .then((cryptogram) => {
-        // console.log('УСПЕШНО платеж послан');
-        // console.log(cryptogram); // криптограмма
-        cryptogramStore = cryptogram;
-
-        const text = document.getElementById('r_crypto');
-        text.innerText = cryptogram;
-        text.style.height = (text.scrollHeight) + 'px';
-
-        document.getElementById('paysend').disabled = false;
-      }).catch((errors) => {
+    try {
+      const cryptogram = await checkout.createPaymentCryptogram();
+      cryptogramStore = cryptogram;
+    }
+    catch(errors) {
       console.log(errors);
-    });
+    };
   }
 
-  function reg() {
-    const frm = document.getElementById('checkoutForm');
-    frm.addEventListener('submit', handleSubmit);
-    document.getElementById('paysend').addEventListener('click', submitPayment);
-  }
 
-  reg();
-
-  // const postUtl = "http://localhost:3000/app2/rcvcard"
-  // const postUtl = "https://cloudpayments1.tk/app2/rcvcard";
-  const postUtl = "https://makeupkitchen.ga/app2/rcvcard";
-
+  // сделать переход на 3D Secure
+  // начать транзакцию
   async function postCardData() {
 
     const amount = document.getElementById('c_amount').value;
@@ -164,6 +162,7 @@
       alert('введите правильное значение amount');
       return;
     }
+    const postUtl = `${BASE_URL}/app2/rcvcard`;
     const response = await fetch(postUtl, {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
@@ -177,9 +176,36 @@
         amount: amount,
       })
     });
+    await logger('postCardData : получен ответ');
     return await response.json(); // parses JSO
   }
 
+  async function logger(msg) {
+    const url = `${BASE_URL}/app2/logger`;
+    if (typeof msg === 'string') {
+      msg = {msg};
+    }
+    console.log('Logger : ', msg);
+    await fetch(url, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      mode: "cors",
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(msg)
+    });
+
+  }
+
+
+  function reg() {
+    document.getElementById('paysend').addEventListener('click', submitPayment1);
+    console.log('register submit');
+  }
+
+  reg();
+  logger('======== LOG START !!!!!!! ');
 </script>
 
 </body>

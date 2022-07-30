@@ -8,6 +8,7 @@ import cors from 'cors';
 import { recieveCardData } from './routes/recieve-card-data';
 import { paynotify } from './routes/pay_notify';
 import { succesPay } from './routes/succes-pay';
+import { logger } from './routes/logger';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,13 +35,17 @@ app.post('/app2/rcvcard', async (req, res) => {
 });
 
 app.post('/app2/paynotify', async (req, res) => {
-  console.log('paynotify');
+  console.log('*/*** *** PAYNOTIFY */***********************');
   await paynotify(req, res);
 });
 
 app.post('/app2/succespay', async (req, res) => {
   console.log('/app2/succespay');
   await succesPay(req, res);
+});
+
+app.post('/app2/logger', (req, res) => {
+  logger(req, res);
 });
 
 app.listen(port, () => {

@@ -1,0 +1,5 @@
+#!/bin/bash
+chmod +x vgg.sh
+chmod +x restart.bh
+cp vgg.sh /etc/profile.d
+ls /etc/profile.d

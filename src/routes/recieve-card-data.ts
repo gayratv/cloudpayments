@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 // import { Types } from 'ydb-sdk';
 import { Request, Response } from 'express';
 import { PaymentData, sendMoney } from '../send_payment';
-import { IPaymentsStruct } from '../utils/ydb-ipayments';
+import { IPaymentsStruct } from '../utils/ydb-ipayments.ts.old';
 
 /*
  В теле получим
@@ -288,7 +288,7 @@ async function start3DSecure(
     // @ts-ignore
     // storeVal.TermUrl = `https://cloudpayments1.tk/succespay.html?id=${id}`;
     // storeVal.TermUrl = `https://cloudpayments1.tk/succespay.html`;
-    storeVal.TermUrl = `https://cloudpayments1.tk/app2/succespay?id=${id}`;
+    storeVal.TermUrl = `${process.env.BASE_URL}/app2/succespay?id=${id}`;
     console.log('start3DSecure возвращаю ответ ');
     res.status(200).end(JSON.stringify(storeVal));
     return;

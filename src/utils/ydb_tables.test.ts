@@ -52,5 +52,11 @@ class Tbl1_new_payments extends TableWork {
   const a = new Tbl1_new_payments('99');
   a.Amount = 456;
   await a.upsertTable();
+
+  const c = await Tbl1_new_payments.getRowByPrimaryKey<Tbl1_new_payments>(
+    '123'
+  );
+  console.log(c?.IpUser);
+
   process.exit(0);
 })();

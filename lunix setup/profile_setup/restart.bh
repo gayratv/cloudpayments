@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# основной клиент отрабатывает после root
+
+date
+tmux ls &>l1.log
+tm=$(cat l1.log)
+
+# no server running on
+if [[ "$tm" == error* || "$tm" =~ ^no* ]]
+then
+	tmux new -d -s view
+	tmux new -s admin
+else
+	echo "$tm"
+	tmux attach -t admin
+fi
