@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { Request, Response } from 'express';
 import { PaymentData, sendMoney } from '../send_payment';
 import { Payments } from '../utils/ydb_payments';
+// @ts-ignore
+import { send3Drequest } from './s3DSrequest-form';
 
 /*
  В теле получим
@@ -286,10 +288,11 @@ async function start3DSecure(
     storeVal.AcsUrl = AcsUrl;
     await storeVal.upsertTable();
     // @ts-ignore
-    // storeVal.TermUrl = `https://cloudpayments1.tk/succespay.html?id=${id}`;
-    // storeVal.TermUrl = `https://cloudpayments1.tk/succespay.html`;
     storeVal.TermUrl = `${process.env.BASE_URL}/app2/succespay?id=${id}`;
-    console.log('start3DSecure возвращаю ответ ');
+    // const TermUrl = `${process.env.BASE_URL}/app2/succespay?id=${id}`;
+    console.log('посылаю запрос start3DSecure ');
+    // await send3Drequest(storeVal, TermUrl, res);
+    // res.status(200);
     res.status(200).end(JSON.stringify(storeVal));
     return;
   }
