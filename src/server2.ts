@@ -18,6 +18,8 @@ const port = process.env.PORT || 3000;
 })();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // support encoded bodies
+
 app.options('*', cors());
 app.use(cors());
 
@@ -35,12 +37,12 @@ app.post('/app2/rcvcard', async (req, res) => {
 });
 
 app.post('/app2/paynotify', async (req, res) => {
+  console.log('===============================================');
   console.log('*/*** *** PAYNOTIFY */***********************');
   await paynotify(req, res);
 });
 
 app.post('/app2/succespay', async (req, res) => {
-  console.log('/app2/succespay');
   await succesPay(req, res);
 });
 
