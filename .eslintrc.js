@@ -23,6 +23,7 @@ module.exports = {
     'prettier/prettier': ['error', { singleQuote: true }],
     'react/no-unescaped-entities': 0,
     '@typescript-eslint/ban-ts-comment': 0,
+    '@typescript-eslint/no-explicit-any': 0,
   },
   overrides: [
     {

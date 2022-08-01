@@ -1,8 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
-
-const aInst: AxiosInstance = axios.create({
-  baseURL: 'https://api.cloudpayments.ru/payments/cards/charge',
-});
+import axios from 'axios';
+import { config } from './config';
 
 // Параметры запроса:
 
@@ -38,7 +35,7 @@ export interface PaymentData {
 export async function sendMoney(p: PaymentData) {
   try {
     console.log('Start post');
-    const response = await aInst.post('', p, {
+    const response = await axios.post(config.send_payment_url, p, {
       auth: {
         username: process.env.USERNAME1!,
         password: process.env.PASSWORD!,

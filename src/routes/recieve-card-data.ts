@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 // import { Types } from 'ydb-sdk';
 import { Request, Response } from 'express';
 import { PaymentData, sendMoney } from '../send_payment';
-import { IPaymentsStruct } from '../utils/ydb-ipayments.ts.old';
+import { Payments } from '../utils/ydb_payments';
 
 /*
  В теле получим
@@ -37,7 +37,7 @@ export async function recieveCardData(
   const id = invoiceID;
 
   // Записать запрос в базу
-  const clientData = new IPaymentsStruct(id);
+  const clientData = new Payments(id);
   clientData.Amount = amount;
   clientData.InvoiceId = invoiceID;
   clientData.IpUser = realIP as string;
@@ -244,7 +244,7 @@ export type IcloudResponcePayment =
 function IcloudResponcePayment_need3Dauth(
   o: IcloudResponcePayment
 ): o is IcloudResponcePayment_need3Dauth {
-  return (o as IcloudResponcePayment_need3Dauth).Model.PaReq !== undefined;
+  return (o as IcloudResponcePayment_need3Dauth).Model?.PaReq !== undefined;
 }
 
 // если Success = false и AcsUrl не null - то перйти на AcsUrl
@@ -280,7 +280,7 @@ async function start3DSecure(
     }
 
     const { TransactionId, PaReq, AcsUrl } = sendMoneyResponce.Model;
-    const storeVal = new IPaymentsStruct(id);
+    const storeVal = new Payments(id);
     storeVal.TransactionId = TransactionId;
     storeVal.PaReq = PaReq;
     storeVal.AcsUrl = AcsUrl;
