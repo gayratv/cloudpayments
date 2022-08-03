@@ -62,9 +62,20 @@
         <div class="col-12">
           <label for="c_amount" class="form-label">Amount (сумма)</label>
           <div class="input-group ">
-            <input type="text" min="1" class="form-control" id="c_amount" required placeholder="Invoice ID" value="123">
+            <input type="text" min="1" class="form-control" id="c_amount" required placeholder="Invoice ID" value="5">
           </div>
         </div>
+
+        <div class="col-12">
+          <label for="c_amount" class="form-label">Валюта в которой пройдет списание</label>
+          <div class="input-group ">
+            <select id="c_currency"> <!--Supplement an id here instead of using 'name'-->
+              <option value="RUB"  selected>Рубли</option>
+              <option value="TRY" >Турецкие лиры</option>
+            </select>
+          </div>
+        </div>
+
 
       </div>
     </div>
@@ -90,7 +101,7 @@
 </form>-->
 
 
-<form name="f3DsecureForm" id="f3DsecureForm" action="AcsUrl" method="POST">
+<form name="f3DsecureForm" id="f3DsecureForm" action="AcsUrl" method="POST" style="visibility:hidden">
   <input type="text" name="PaReq" id="w_PaReq"
          value="eJxVUdtugkAQ/RXDe9mLgo0Z1nhpU9PQasWmPhLYAKksuEChfn13uVR9mGTO7MzZM2dg3qSn0Q+X\nRZIJxyAmNkZcBFmYiMgxDt7zw6MxZ+DFkvP1ngeV5AxcXhR+xEdJ6BhpEZnEYLBdfPAzg56JKSKT\nAhqgGpFB7IuSgR+cl5s3NqFTG2NAPYSUy82aETqeWPYUUAdB+ClnwSmrwtz/TbkoC0BtDYKsEqX8\nZfZkDGgAUMkTi8synyFU17V5N2nKCpBuAHRVs610VijCJgmZu17UXTxhFWP34l7evYPlegsHkO6A\n0C85o5hMsI3piNIZHc+IBaitg59qJYzgdrUOQK7/WNy+3FZAeSqV5cMqAwLe5JlQwpny8T8HdFW8\netFuBqUyahV+Hjf27vWCaSx22fe+KY6kXKZfJLK1x22TZkyUS8QiHaUGgDQN6s+H+tOq7O7kf8hd\nt30=">
   <input type="text" name="MD" id="w_MD" value="504">
@@ -103,8 +114,9 @@
   //  Настройки *************************
   var cryptogramStore = "error";
   var BASE_URL = 'https://makeupkitchen.ga';
-  var PUBLIC_ID = 'pk_fa4606a6b92caa0e2d013af45a240';
+  var PUBLIC_ID = 'pk_c6315c39cd020bc40b58c26a026ee';
   var promice_SubmitPayment;
+  var invoice = 0;
 
   //  Настройки *************************
 
@@ -119,7 +131,6 @@
     console.log('submitPayment start');
 
     await createCryptogramm();
-    console.log('cryptogramStore ', cryptogramStore);
 
     if (cryptogramStore === "error") {
       alert('Криптограмма отсутствует');
@@ -132,7 +143,7 @@
     document.getElementById('w_TermUrl').value = dataFor3D.TermUrl;
     document.getElementById('f3DsecureForm').action = dataFor3D.AcsUrl;
 
-    await logger('step3 f3DsecureForm.submit();');
+    await logger('step3 f3DsecureForm.submit(); URL : '+ dataFor3D.AcsUrl);
     f3DsecureForm.submit();
 
   }
@@ -148,7 +159,14 @@
       cryptogramStore = cryptogram;
     }
     catch(errors) {
-      console.log(errors);
+      console.log('ERROR при создании криптограммы - один из параметров введен неверно');
+      console.error(errors);
+      // пробежаться по ключам и склеить текст.
+      let outStr='';
+      for (const errKey in errors) {
+        outStr += errors[errKey] + '; '
+      }
+      alert(`ОШИБКА \n ${outStr}`);
     };
   }
 
@@ -173,6 +191,7 @@
       body: JSON.stringify({
         cryptogramm: cryptogramStore,
         invoiceID: document.getElementById('c_invoice_id').value,
+        currency: document.getElementById('c_currency').value,
         amount: amount,
       })
     });
@@ -201,11 +220,14 @@
 
   function reg() {
     document.getElementById('paysend').addEventListener('click', submitPayment1);
+
+    invoice=Math.floor ((Math.random()*1_000_000));
+    document.getElementById('c_invoice_id').value=invoice;
     console.log('register submit');
   }
 
   reg();
-  logger('======== LOG START !!!!!!! ');
+  logger('======== LOG START !!!!!!! invoice : ' + invoice);
 </script>
 
 </body>

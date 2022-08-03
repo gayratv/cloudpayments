@@ -17,6 +17,7 @@ import {
   getSACredentialsFromJson,
   IamAuthService,
   primitiveTypeToValue,
+  Logger,
   Ydb,
 } from 'ydb-sdk';
 
@@ -24,7 +25,7 @@ import { initDotEnv } from './dotenv-init';
 initDotEnv();
 // import { IAuthService } from 'ydb-sdk/build/credentials';
 
-export const logger = getLogger();
+export const logger: Logger = getLogger();
 export let driver: Driver;
 
 export async function initDbLocal() {

@@ -18,7 +18,7 @@ import PT = Ydb.Type.PrimitiveTypeId;
 // {"code":0};
 
 export async function paynotify(req: Request, res: Response): Promise<void> {
-  console.log(req.body);
+  console.log(req.body?.TransactionId);
   res.status(200).end(JSON.stringify({ code: 0 }));
 }
 

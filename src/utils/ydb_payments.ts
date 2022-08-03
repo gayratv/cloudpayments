@@ -16,6 +16,7 @@ export class Payments extends TableWork {
   AcsUrl?: string;
   TransactionId?: number;
   timestamp?: Date;
+  currency?: string;
 
   constructor(id: string) {
     super();
@@ -42,6 +43,7 @@ export class Payments extends TableWork {
       AcsUrl: PT.UTF8,
       TransactionId: PT.UINT64,
       timestamp: PT.TIMESTAMP,
+      currency: PT.UTF8,
     };
   }
 }

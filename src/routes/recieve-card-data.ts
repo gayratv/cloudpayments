@@ -14,6 +14,7 @@ import { send3Drequest } from './s3DSrequest-form';
   "cryptogramm": "asdkjh",
   "invoiceID": "alskdj",
   "amount": 25
+  currency : RUB или TRY
 }
  */
 export async function recieveCardData(
@@ -21,7 +22,7 @@ export async function recieveCardData(
   res: Response
 ): Promise<void> {
   console.log('recieveCardData');
-  let { cryptogramm, invoiceID, amount } = req.body;
+  let { cryptogramm, invoiceID, amount, currency = 'RUB' } = req.body;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   // @ts-ignore
   const realIP = req.headers['x-real-ip'] ? req.headers['x-real-ip'] : 'none';
@@ -44,6 +45,8 @@ export async function recieveCardData(
   clientData.InvoiceId = invoiceID;
   clientData.IpUser = realIP as string;
   clientData.Cryptogram = cryptogramm;
+  clientData.currency = currency;
+  clientData.timestamp = new Date();
   await clientData.upsertTable();
 
   console.log('запрос на платеж записан в базу');
@@ -55,6 +58,7 @@ export async function recieveCardData(
     IpAddress: realIP as string,
     CardCryptogramPacket: cryptogramm,
     InvoiceId: invoiceID,
+    Currency: currency,
   };
   console.log('посылаю sendMoney');
   const sendMoneyResponce = await sendMoney(p);
@@ -265,22 +269,30 @@ async function start3DSecure(
   sendMoneyResponce_row: any,
   res: Response
 ) {
-  console.log('start3DSecure');
+  console.log('start3DSecure step1');
+  console.log(sendMoneyResponce_row.data);
   if (!('data' in sendMoneyResponce_row)) {
+    console.error(!('data' in sendMoneyResponce_row));
     res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 2 ' }));
     return;
   }
+  console.log('start3DSecure step2');
   const sendMoneyResponce: IcloudResponcePayment =
     sendMoneyResponce_row.data as IcloudResponcePayment;
+  console.log('start3DSecure step3');
   if (IcloudResponcePayment_need3Dauth(sendMoneyResponce)) {
     // ------- нужна 3D secure -----------
+    console.log('------- нужна 3D secure -----------');
     // для начала сохраним дополнительные параметры
     // Записать запрос в базу
     if (sendMoneyResponce.Success) {
+      console.error('start3DSecure step 4');
       res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 3 ' }));
       return;
     }
 
+    // 3d secure не нужна
+    console.log('start3DSecure 3d secure не нужна step5');
     const { TransactionId, PaReq, AcsUrl } = sendMoneyResponce.Model;
     const storeVal = new Payments(id);
     storeVal.TransactionId = TransactionId;
@@ -296,5 +308,6 @@ async function start3DSecure(
     res.status(200).end(JSON.stringify(storeVal));
     return;
   }
+  console.error('start3DSecure ошибка step6');
   res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 1 ' }));
 }

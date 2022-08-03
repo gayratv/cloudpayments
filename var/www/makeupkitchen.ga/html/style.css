@@ -220,3 +220,5 @@ button, input, optgroup, select, textarea {
 input:invalid {
   border: 2px dashed red;
 }
+
+#c_currency {padding:2px}
