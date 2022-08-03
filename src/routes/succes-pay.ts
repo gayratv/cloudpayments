@@ -3,9 +3,10 @@ import { Payments } from '../utils/ydb_payments';
 import axios from 'axios';
 import { config } from '../config';
 import { SuccesTransactionData } from '../utils/ydb-succes-transaction';
+import { loggerMy } from '../utils/getlogger-my';
 
 export async function succesPay(req: Request, res: Response): Promise<void> {
-  console.log('succesPay 1111111');
+  loggerMy.info('succesPay 1111111');
   // console.log(req.body);
 
   // На входе должен получить параметры
@@ -14,14 +15,14 @@ export async function succesPay(req: Request, res: Response): Promise<void> {
   // @ts-ignore
   const { MD, PaRes, CRes } = req.body;
 
-  console.log(req.query); // здесь будет id
+  loggerMy.info(req.query); // здесь будет id
   if (!req.query.id) {
     // res.status(200).redirect(`${process.env.BASE_URL}/errorpay.htm`);
     res.status(400);
     return;
   }
   const transaction = await Payments.getRowByPrimaryKey<Payments>(req.query.id);
-  console.log('transaction из базы запросил');
+  loggerMy.info('transaction из базы запросил');
   if (!transaction) {
     // такого платежа нет
     res
@@ -65,8 +66,8 @@ export async function succesPay(req: Request, res: Response): Promise<void> {
         },
       }
     );
-    console.log(' succesPay responce');
-    console.log('Success : ', cpData.data.Success);
+    loggerMy.info(' succesPay responce');
+    loggerMy.info(cpData.data.Success, ' Success pay ');
     // console.log('Model : ', cpData.data.Model);
     // console.log(' succesPay responce', cpData.data);
     cpData.data.Model.Success = cpData.data.Success;
@@ -77,7 +78,7 @@ export async function succesPay(req: Request, res: Response): Promise<void> {
     }
     await st.upsertTable();
   } catch (err) {
-    console.log('ERROR succesPay', err);
+    loggerMy.info(err as object, 'ERROR succesPay');
   }
   res
     .status(200)

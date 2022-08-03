@@ -1,12 +1,10 @@
 /* eslint-disable prefer-const */
 import { v4 as uuidv4 } from 'uuid';
-// import { createTypedValue, driver } from '../utils/database';
-// import { Types } from 'ydb-sdk';
 import { Request, Response } from 'express';
 import { PaymentData, sendMoney } from '../send_payment';
 import { Payments } from '../utils/ydb_payments';
-// @ts-ignore
-import { send3Drequest } from './s3DSrequest-form';
+import { loggerMy } from '../utils/getlogger-my';
+// import { send3Drequest } from './s3DSrequest-form';
 
 /*
  В теле получим
@@ -21,7 +19,7 @@ export async function recieveCardData(
   req: Request,
   res: Response
 ): Promise<void> {
-  console.log('recieveCardData');
+  loggerMy.info('recieveCardData');
   let { cryptogramm, invoiceID, amount, currency = 'RUB' } = req.body;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   // @ts-ignore
@@ -49,7 +47,7 @@ export async function recieveCardData(
   clientData.timestamp = new Date();
   await clientData.upsertTable();
 
-  console.log('запрос на платеж записан в базу');
+  loggerMy.info('запрос на платеж записан в базу');
 
   // ************************************
   // пошлем запрос на проведение транзакции
@@ -60,9 +58,9 @@ export async function recieveCardData(
     InvoiceId: invoiceID,
     Currency: currency,
   };
-  console.log('посылаю sendMoney');
+  loggerMy.info('посылаю sendMoney');
   const sendMoneyResponce = await sendMoney(p);
-  console.log('получен ответ sendMoney');
+  loggerMy.info('получен ответ sendMoney');
 
   //*************************************
   // если есть 3Dsecure - получим в ответ его
@@ -269,22 +267,27 @@ async function start3DSecure(
   sendMoneyResponce_row: any,
   res: Response
 ) {
-  console.log('start3DSecure step1');
-  console.log(sendMoneyResponce_row.data);
+  loggerMy.info('start3DSecure step1');
+  loggerMy.info('');
+  loggerMy.info('---------------------------------------');
+  loggerMy.info(sendMoneyResponce_row.data);
+  loggerMy.info('---------------------------------------');
   if (!('data' in sendMoneyResponce_row)) {
     console.error(!('data' in sendMoneyResponce_row));
     res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 2 ' }));
     return;
   }
-  console.log('start3DSecure step2');
+  loggerMy.info('start3DSecure step2');
   const sendMoneyResponce: IcloudResponcePayment =
     sendMoneyResponce_row.data as IcloudResponcePayment;
-  console.log('start3DSecure step3');
+  loggerMy.info('start3DSecure step3');
   if (IcloudResponcePayment_need3Dauth(sendMoneyResponce)) {
-    // ------- нужна 3D secure -----------
-    console.log('------- нужна 3D secure -----------');
-    // для начала сохраним дополнительные параметры
-    // Записать запрос в базу
+    loggerMy.info('------- нужна 3D secure -----------');
+    /*
+      ------- нужна 3D secure -----------
+     для начала сохраним дополнительные параметры
+     Записать запрос в базу
+    */
     if (sendMoneyResponce.Success) {
       console.error('start3DSecure step 4');
       res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 3 ' }));
@@ -292,7 +295,7 @@ async function start3DSecure(
     }
 
     // 3d secure не нужна
-    console.log('start3DSecure 3d secure не нужна step5');
+    loggerMy.info('start3DSecure 3d secure не нужна step5');
     const { TransactionId, PaReq, AcsUrl } = sendMoneyResponce.Model;
     const storeVal = new Payments(id);
     storeVal.TransactionId = TransactionId;
@@ -302,9 +305,16 @@ async function start3DSecure(
     // @ts-ignore
     storeVal.TermUrl = `${process.env.BASE_URL}/app2/succespay?id=${id}`;
     // const TermUrl = `${process.env.BASE_URL}/app2/succespay?id=${id}`;
-    console.log('посылаю запрос start3DSecure ');
-    // await send3Drequest(storeVal, TermUrl, res);
-    // res.status(200);
+    loggerMy.info('посылаю запрос start3DSecure ');
+
+    /*
+
+    проба кода для посылки form-data через сервер
+
+    await send3Drequest(storeVal, TermUrl, res);
+    res.status(200);
+
+     */
     res.status(200).end(JSON.stringify(storeVal));
     return;
   }

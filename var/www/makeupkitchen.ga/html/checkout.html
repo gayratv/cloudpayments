@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="col">
-  <form id="checkoutForm" class="mx-auto">
+  <form id="checkoutForm" name="checkoutForm" class="mx-auto">
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Card data makeupkitchen </h5>
@@ -62,7 +62,7 @@
         <div class="col-12">
           <label for="c_amount" class="form-label">Amount (сумма)</label>
           <div class="input-group ">
-            <input type="text" min="1" class="form-control" id="c_amount" required placeholder="Invoice ID" value="5">
+            <input type="text" min="1" class="form-control" id="c_amount" required placeholder="Invoice ID" value="1">
           </div>
         </div>
 
@@ -70,8 +70,8 @@
           <label for="c_amount" class="form-label">Валюта в которой пройдет списание</label>
           <div class="input-group ">
             <select id="c_currency"> <!--Supplement an id here instead of using 'name'-->
-              <option value="RUB"  selected>Рубли</option>
-              <option value="TRY" >Турецкие лиры</option>
+              <option value="RUB">Рубли</option>
+              <option value="TRY" selected>Турецкие лиры</option>
             </select>
           </div>
         </div>
@@ -112,6 +112,7 @@
 <script src="https://checkout.cloudpayments.ru/checkout.js"></script>
 <script>
   //  Настройки *************************
+
   var cryptogramStore = "error";
   var BASE_URL = 'https://makeupkitchen.ga';
   var PUBLIC_ID = 'pk_c6315c39cd020bc40b58c26a026ee';
@@ -143,31 +144,47 @@
     document.getElementById('w_TermUrl').value = dataFor3D.TermUrl;
     document.getElementById('f3DsecureForm').action = dataFor3D.AcsUrl;
 
-    await logger('step3 f3DsecureForm.submit(); URL : '+ dataFor3D.AcsUrl);
+    await logger('step3 f3DsecureForm.submit(); URL : ' + dataFor3D.AcsUrl);
     f3DsecureForm.submit();
 
   }
 
 
   async function createCryptogramm() {
+    /* вариант через форму
     const checkout = new cp.Checkout({
       publicId: PUBLIC_ID,
       container: document.getElementById("checkoutForm")
     });
+
+     */
+
+    const fieldValues = {
+      cvv: document.getElementById('c_secret').value,
+      cardNumber: document.getElementById('c_cardnumber').value,
+      expDateMonth: document.getElementById('c_expire_mm').value,
+      expDateYear: document.getElementById('c_expire_yy').value,
+    };
+    console.log(fieldValues);
+    const checkout = new cp.Checkout({
+      publicId: PUBLIC_ID
+    });
+
+
     try {
-      const cryptogram = await checkout.createPaymentCryptogram();
+      const cryptogram = await checkout.createPaymentCryptogram(fieldValues);
       cryptogramStore = cryptogram;
-    }
-    catch(errors) {
+    } catch (errors) {
       console.log('ERROR при создании криптограммы - один из параметров введен неверно');
       console.error(errors);
       // пробежаться по ключам и склеить текст.
-      let outStr='';
+      let outStr = '';
       for (const errKey in errors) {
-        outStr += errors[errKey] + '; '
+        outStr += errors[errKey] + '; ';
       }
       alert(`ОШИБКА \n ${outStr}`);
-    };
+    }
+    ;
   }
 
 
@@ -221,8 +238,8 @@
   function reg() {
     document.getElementById('paysend').addEventListener('click', submitPayment1);
 
-    invoice=Math.floor ((Math.random()*1_000_000));
-    document.getElementById('c_invoice_id').value=invoice;
+    invoice = Math.floor((Math.random() * 1_000_000));
+    document.getElementById('c_invoice_id').value = invoice;
     console.log('register submit');
   }
 

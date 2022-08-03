@@ -9,6 +9,9 @@ import { recieveCardData } from './routes/recieve-card-data';
 import { paynotify } from './routes/pay_notify';
 import { succesPay } from './routes/succes-pay';
 import { logger } from './routes/logger';
+import { loggerMy } from './utils/getlogger-my';
+
+loggerMy.info('start');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -37,8 +40,8 @@ app.post('/app2/rcvcard', async (req, res) => {
 });
 
 app.post('/app2/paynotify', async (req, res) => {
-  console.log('===============================================');
-  console.log('*/*** *** PAYNOTIFY */***********************');
+  loggerMy.info('===============================================');
+  loggerMy.info('*/*** *** PAYNOTIFY */***********************');
   await paynotify(req, res);
 });
 
@@ -51,5 +54,5 @@ app.post('/app2/logger', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  loggerMy.info(`Cloudpayments app listening on port ${port}`);
 });
