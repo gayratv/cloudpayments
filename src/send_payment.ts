@@ -42,8 +42,6 @@ export async function sendMoney(p: PaymentData) {
       },
     });
 
-
-
     return response;
   } catch (err) {
     console.error((err as Error).message);
