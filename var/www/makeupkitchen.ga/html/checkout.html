@@ -17,20 +17,20 @@
         <div class="col-12">
           <label for="c_cardnumber" class="form-label">Card number</label>
           <div class="input-group has-validation">
-            <input type="text" class="form-control" id="c_cardnumber" data-cp="cardNumber" placeholder=""
+            <input type="text" class="form-control" id="c_cardnumber"  placeholder=""
                    value="4242 4242 4242 4242" required="">
           </div>
         </div>
         <div class="row">
           <div class="col-sm-3-small">
             <label for="c_expire_mm" class="form-label">MM</label>
-            <input type="text" class="form-control text-sm-start ps-1" id="c_expire_mm" data-cp="expDateMonth"
+            <input type="text" class="form-control text-sm-start ps-1" id="c_expire_mm"
                    placeholder="" value="01"
                    required="">
           </div>
           <div class="col-sm-3-small">
             <label for="c_expire_yy" class="form-label">YY</label>
-            <input type="text" class="form-control text-sm-start ps-1" id="c_expire_yy" data-cp="expDateYear"
+            <input type="text" class="form-control text-sm-start ps-1" id="c_expire_yy"
                    placeholder="" value="25"
                    required="">
           </div>
@@ -38,7 +38,7 @@
           <div class="col-sm-3">
             <label for="c_secret" class="form-label">CVV</label>
             <div class="input-group has-validation">
-              <input type="text" class="form-control" id="c_secret" data-cp="cvv" placeholder="777" value="777"
+              <input type="text" class="form-control" id="c_secret"  placeholder="777" value="777"
                      required="">
             </div>
           </div>
@@ -47,7 +47,7 @@
         <div class="col-12">
           <label for="c_name" class="form-label">Name</label>
           <div class="input-group ">
-            <input type="text" class="form-control" id="c_name" data-cp="name" placeholder="Name" required=""
+            <input type="text" class="form-control" id="c_name"  placeholder="Name" required=""
                    value="Chad Virgin">
           </div>
         </div>
@@ -209,7 +209,9 @@
         cryptogramm: cryptogramStore,
         invoiceID: document.getElementById('c_invoice_id').value,
         currency: document.getElementById('c_currency').value,
+        payerName: document.getElementById('c_name').value,
         amount: amount,
+
       })
     });
     await logger('postCardData : получен ответ');

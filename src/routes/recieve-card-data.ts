@@ -13,6 +13,7 @@ import { loggerMy } from '../utils/getlogger-my';
   "invoiceID": "alskdj",
   "amount": 25
   currency : RUB или TRY
+  payerName: Gayrat
 }
  */
 export async function recieveCardData(
@@ -20,7 +21,13 @@ export async function recieveCardData(
   res: Response
 ): Promise<void> {
   loggerMy.info('recieveCardData');
-  let { cryptogramm, invoiceID, amount, currency = 'RUB' } = req.body;
+  let {
+    cryptogramm,
+    invoiceID,
+    amount,
+    currency = 'RUB',
+    payerName,
+  } = req.body;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   // @ts-ignore
   const realIP = req.headers['x-real-ip'] ? req.headers['x-real-ip'] : 'none';
@@ -57,6 +64,7 @@ export async function recieveCardData(
     CardCryptogramPacket: cryptogramm,
     InvoiceId: invoiceID,
     Currency: currency,
+    Name: payerName,
   };
   loggerMy.info('посылаю sendMoney');
   const sendMoneyResponce = await sendMoney(p);
