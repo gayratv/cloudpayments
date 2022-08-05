@@ -282,50 +282,70 @@ async function start3DSecure(
   loggerMy.info('---------------------------------------');
   if (!('data' in sendMoneyResponce_row)) {
     console.error(!('data' in sendMoneyResponce_row));
-    res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 2 ' }));
+    res.status(400).end(
+      JSON.stringify({
+        error: 'Неизвестная ошибка нет поля  data in sendMoneyResponce_row ',
+      })
+    );
     return;
   }
   loggerMy.info('start3DSecure step2');
   const sendMoneyResponce: IcloudResponcePayment =
     sendMoneyResponce_row.data as IcloudResponcePayment;
   loggerMy.info('start3DSecure step3');
-  if (IcloudResponcePayment_need3Dauth(sendMoneyResponce)) {
-    loggerMy.info('------- нужна 3D secure -----------');
-    /*
-      ------- нужна 3D secure -----------
-     для начала сохраним дополнительные параметры
-     Записать запрос в базу
-    */
-    if (sendMoneyResponce.Success) {
-      console.error('start3DSecure step 4');
-      res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 3 ' }));
+
+  if ('ReasonCode' in sendMoneyResponce.Model) {
+    // в ответ получено Cancel или 3D secure
+
+    // 3Dsecure
+    if (IcloudResponcePayment_need3Dauth(sendMoneyResponce)) {
+      loggerMy.info('------- нужна 3D secure -----------');
+      /*
+        ------- нужна 3D secure -----------
+       для начала сохраним дополнительные параметры
+       Записать запрос в базу
+      */
+      if (sendMoneyResponce.Success) {
+        console.error('start3DSecure step 4');
+        res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 3 ' }));
+        return;
+      }
+
+      // 3d secure не нужна
+      loggerMy.info('start3DSecure 3d secure не нужна step5');
+      const { TransactionId, PaReq, AcsUrl } = sendMoneyResponce.Model;
+      const storeVal = new Payments(id);
+      storeVal.TransactionId = TransactionId;
+      storeVal.PaReq = PaReq;
+      storeVal.AcsUrl = AcsUrl;
+      await storeVal.upsertTable();
+      // @ts-ignore
+      storeVal.TermUrl = `${process.env.BASE_URL}/app2/succespay?id=${id}`;
+      // const TermUrl = `${process.env.BASE_URL}/app2/succespay?id=${id}`;
+      loggerMy.info('посылаю запрос start3DSecure ');
+
+      /*
+
+      проба кода для посылки form-data через сервер
+
+      await send3Drequest(storeVal, TermUrl, res);
+      res.status(200);
+
+       */
+      res.status(200).end(JSON.stringify(storeVal));
+      return;
+    } else {
+      // cancel
+      // @ts-ignore
+      sendMoneyResponce.error = 'Cloudpayments отклонил запрос';
+      res.status(401).end(JSON.stringify(sendMoneyResponce));
       return;
     }
-
-    // 3d secure не нужна
-    loggerMy.info('start3DSecure 3d secure не нужна step5');
-    const { TransactionId, PaReq, AcsUrl } = sendMoneyResponce.Model;
-    const storeVal = new Payments(id);
-    storeVal.TransactionId = TransactionId;
-    storeVal.PaReq = PaReq;
-    storeVal.AcsUrl = AcsUrl;
-    await storeVal.upsertTable();
-    // @ts-ignore
-    storeVal.TermUrl = `${process.env.BASE_URL}/app2/succespay?id=${id}`;
-    // const TermUrl = `${process.env.BASE_URL}/app2/succespay?id=${id}`;
-    loggerMy.info('посылаю запрос start3DSecure ');
-
-    /*
-
-    проба кода для посылки form-data через сервер
-
-    await send3Drequest(storeVal, TermUrl, res);
-    res.status(200);
-
-     */
-    res.status(200).end(JSON.stringify(storeVal));
-    return;
   }
   console.error('start3DSecure ошибка step6');
-  res.status(400).end(JSON.stringify({ error: 'Неизвестная ошибка 1 ' }));
+  res.status(400).end(
+    JSON.stringify({
+      error: 'Неизвестная ошибка 1 - ? IcloudResponcePayment_SUCCES ?? ',
+    })
+  );
 }

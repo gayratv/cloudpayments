@@ -23,6 +23,7 @@ export const loggerMy = getLoggerMy();
 // (obj: any, msg?: string, ...args: any[]): void;
 // (msg: string, ...args: any[]): void;
 
+/*
 export function mylog(
   obj1?: Record<string, any> | string,
   msg?: string,
@@ -32,3 +33,6 @@ export function mylog(
 
   msg ? console.log(obj1, msg) : console.log(obj1);
 }
+
+
+ */
