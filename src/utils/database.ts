@@ -63,15 +63,14 @@ export function createTypedValue(type: Ydb.IType, val: any): Ydb.ITypedValue {
   return { type, value: { [c1]: val } };
 }
 
-// TypedValues
-// static int8(value: number): ITypedValue {
-//   return TypedValues.primitive(Type.PrimitiveTypeId.INT8, value);
-// }
-
-// export function withTypeOptions(options: TypedDataOptions) {
-//   return function<T extends Function>(constructor: T): T & {__options: TypedDataOptions} {
-//     return _.merge(constructor, {__options: options});
-//   }
-// }
-
-// static optionalNull(type: Ydb.IType): Ydb.ITypedValue
+export async function initDbLocalFail() {
+  logger.info('Driver initializing...');
+  const saKeyFile = process.env.SA_KEY_FILE;
+  const saCredentials = getSACredentialsFromJson('./' + saKeyFile);
+  const authService = new IamAuthService(saCredentials);
+  driver = new Driver({
+    endpoint: process.env.ENDPOINT,
+    database: process.env.DATABASE + '1',
+    authService,
+  });
+}
