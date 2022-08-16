@@ -24,3 +24,4 @@ package-lock.json
 # ключ YDB
 /service_account_key_file.json
 /log.txt
+/src/utils/log.txt

@@ -2,6 +2,7 @@
 
 #### 1. Браузер
 Сформировать криптограмму, послать на свой сервер makeupkitchen.ga
+/app2/rcvcard
 
 #### 2. Сервер makeupkitchen.ga получил криптограмму, invoice id, amount
 

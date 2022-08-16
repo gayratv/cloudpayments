@@ -10,7 +10,7 @@
   <form id="checkoutForm" name="checkoutForm" class="mx-auto">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Card data makeupkitchen </h5>
+        <h5 class="card-title">Card data makeupkitchen 5 </h5>
         <h6 class="card-subtitle mb-2 text-muted">Past some card data ot use default
         </h6>
 
@@ -115,14 +115,13 @@
 
   var cryptogramStore = "error";
   var BASE_URL = 'https://makeupkitchen.ga';
-  var PUBLIC_ID = 'pk_c6315c39cd020bc40b58c26a026ee';
+  var PUBLIC_ID = 'pk_fa4606a6b92caa0e2d013af45a240';
   var promice_SubmitPayment;
   var invoice = 0;
 
   //  Настройки *************************
 
   function submitPayment1(ev) {
-    console.log('submitPayment1 start');
     ev.preventDefault();
     ev.stopPropagation();
     promice_SubmitPayment = submitPayment();
@@ -176,6 +175,7 @@
     const checkout = new cp.Checkout({
       publicId: PUBLIC_ID
     });
+    console.log('create cryptogram public id : ',PUBLIC_ID);
 
 
     try {
